@@ -1,21 +1,42 @@
 document.getElementById('contactForm').addEventListener('submit', function (e) {
-    e.preventDefault();
+    e.preventDefault(); // stop default submit
   
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const message = document.getElementById('message').value.trim();
+    const form = e.target;
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const message = form.message.value.trim();
     const formMsg = document.getElementById('formMsg');
   
-    if (name === '' || email === '' || message === '') {
+    if (!name || !email || !message) {
       formMsg.textContent = 'Please fill out all fields.';
       formMsg.style.color = 'red';
       return;
     }
   
-    formMsg.textContent = 'Thank you! Your message has been sent.';
-    formMsg.style.color = 'green';
+    // Prepare form data for submission
+    const data = new FormData(form);
   
-    // Optional: Reset the form
-    this.reset();
+    // Send data via Fetch API to Formsubmit
+    fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        formMsg.textContent = 'Thank you! Your message has been sent.';
+        formMsg.style.color = 'green';
+        form.reset();
+      } else {
+        formMsg.textContent = 'Oops! There was a problem submitting your form.';
+        formMsg.style.color = 'red';
+      }
+    })
+    .catch(() => {
+      formMsg.textContent = 'Oops! There was a problem submitting your form.';
+      formMsg.style.color = 'red';
+    });
   });
   
